@@ -1,0 +1,43 @@
+name: Auto Deploy to AWS EC2
+run-name: ${{ github.repository }} is automatic deploy to AWS EC2 🚀
+
+on:
+  push:
+    branches:
+      - master
+
+env:
+  NODE_ENV: ${{secrets.NODE_ENV}}
+  MONGO_URI: ${{secrets.MONGO_URI}} 
+  PORT: ${{ secrets.PORT }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Create variable environment
+        run: |
+          chmod +x ./scripts/create_dotenv.sh
+          ./scripts/create_dotenv.sh
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -t rsa ${{ secrets.HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy to AWS EC2
+        run: |
+          ssh ubuntu@${{ secrets.HOST }} 'rm -rf ~/script_deploy'
+          scp -r ./scripts ubuntu@${{ secrets.HOST }}:~/script_deploy
+          ssh ubuntu@${{ secrets.HOST }} 'cd ~/script_deploy/ && chmod +x auto_deploy.sh && ./auto_deploy.sh'
+          scp -r .env ubuntu@${{ secrets.HOST }}:~/repo

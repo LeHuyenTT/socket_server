@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+
+  nginx: 
+    build: ./nginx
+    ports:
+      - "4025:4025"
+    depends_on: 
+      - socket
+      - socket1
+    networks:
+      - local-dev
+
+  socket:
+    build: ./socket/
+    ports:
+      - "4026:4025"
+    networks:
+      - local-dev
+
+  socket1:
+    build: ./socket1/
+    ports:
+      - "4027:4025"
+    networks:
+      - local-dev
+
+  cAdvisor:
+    image: google/cadvisor:latest
+    privileged: true
+    devices: 
+      - /dev/kmsg
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    ports:
+      - "8080:8080"
+   
+
+networks:
+  local-dev:
+    driver: bridge
+    name: local-dev
+    external: true

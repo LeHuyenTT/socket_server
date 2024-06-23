@@ -1,0 +1,10 @@
+config:
+  target: "ws://localhost:4025"
+  plugins:
+    socketio: {}
+
+scenarios:
+  - flow:
+      - socketio:
+          emit: "message"
+          data: "Hello, server!"
