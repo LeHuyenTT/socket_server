@@ -13,7 +13,7 @@ fi
 source ~/.nvm/nvm.sh
 
 URL_REPO="https://github.com/LeHuyenTT/socket_server.git"
-DIR_REPO="$HOME/repo1"
+DIR_REPO="$HOME/repo2"
 APP_NAME="Socket"
 MAIN_SCRIPT="app.js"
 
