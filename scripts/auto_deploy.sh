@@ -25,13 +25,13 @@ cleanup_repo() {
     fi
 }
 
-# # Clone the repository and install dependencies
-# clone_and_install() {
-#     git clone "$URL_REPO" "$DIR_REPO"
-#     cd "$DIR_REPO" || exit 1
-#     npm install
-#     echo "Cloned repository and installed dependencies."
-# }
+# Clone the repository and install dependencies
+clone_and_install() {
+    git clone "$URL_REPO" "$DIR_REPO"
+    cd "$DIR_REPO" || exit 1
+    npm install
+    echo "Cloned repository and installed dependencies."
+}
 
 # Restart or start the application with pm2
 manage_application() {
