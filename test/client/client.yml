@@ -8,3 +8,4 @@ scenarios:
       - socketio:
           emit: "message"
           data: "Hello, server!"
+
