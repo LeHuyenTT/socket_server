@@ -4,12 +4,13 @@ import random
 import time
 
 class SocketIOUser(HttpUser):
-    wait_time = between(1, 5)
+    wait_time = between(0.5, 1)
 
     def on_start(self):
         self.sio = socketio.Client()
         self.sio.on('connect', self.on_connect)
         self.sio.on('disconnect', self.on_disconnect)
+        self.sio.on('clientStatus', self.on_message)  # Đăng ký sự kiện một lần ở đây
         
         # Generate a random user_id within the specified range
         self.user_id = random.randint(20520000, 20520999)
@@ -32,49 +33,23 @@ class SocketIOUser(HttpUser):
     @task
     def send_message(self):
         if self.sio.connected:
-            start_time = time.time()
-            # Send 'noti:status' event immediately after connecting
-            class_id = 'MATH101'  # Replace with your class_id or generate dynamically
-            type = random.choice(['joinClass', 'leaveClass'])   # Replace with the type of notification you want to send
-            data = f'{self.user_id}_{class_id}_{type}'
-            self.sio.emit('noti:status', data)
-            self.sio.on('clientStatus', lambda data: self.on_message(data, start_time))
+            self.start_time = time.time()
+            # class_id = 'MATH101'
+            # type = random.choice(['joinClass', 'leaveClass'])
+            # data = f'{self.user_id}_{class_id}_{type}'
+            # self.sio.emit('noti:status', data)
         else:
             print("Socket chưa kết nối")
-    def on_message(self, data, start_time):
+
+    def on_message(self, data):
         end_time = time.time()
-        response_time = (end_time - start_time) * 1000  # milliseconds
+        response_time = (end_time - self.start_time) * 1000  # milliseconds
         print(f"Response time for client {data.get('clientId')}: {response_time:.2f} ms")
         self.environment.events.request.fire(
-            request_type="WSR", 
-
-            
+            request_type="WebSocket", 
             name="clientStatus",
             response_time=response_time,
             response_length=len(str(data)),
             exception=None,
             context=self.context(),
         )
-    
-    # @task
-    # def send_message(self):
-    #     if self.sio.connected:
-    #         user_id = random.randint(20520000, 20520999)
-    #         self.sio.emit('notifications', f'{user_id}_{user_id}:notify')
-    #         start_time = time.time()
-    #         self.sio.on('response', lambda data: self.on_message(data, start_time))
-    #     else:
-    #         print("Socket is not connected")
-
-    # def on_message(self, data, start_time):
-    #     end_time = time.time()
-    #     response_time = (end_time - start_time) * 1000  # milliseconds
-    #     print(f'Response time: {response_time:.2f}')
-    #     self.environment.events.request.fire(
-    #         request_type="WSR",  # WebSocket Response
-    #         name="response",
-    #         response_time=response_time,
-    #         response_length=len(data),
-    #         exception=None,
-    #         context=self.context(),
-    #     )

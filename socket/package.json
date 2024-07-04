@@ -3,6 +3,7 @@
     "@socket.io/cluster-adapter": "^0.2.2",
     "@socket.io/sticky": "^1.0.3",
     "axios": "^1.6.8",
+    "bull": "^4.14.0",
     "cluster": "^0.7.7",
     "colors": "^1.4.0",
     "compression": "^1.7.4",

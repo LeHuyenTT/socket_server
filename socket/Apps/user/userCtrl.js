@@ -18,7 +18,7 @@ module.exports = () => {
                 await UserModel.updateOne({ userID: userId }, { $set: updateFields });
                 console.log(`Updated teacher ${userId} to online status`);
             } else {
-                console.log(`Role ${role} is not recognized`);
+                console.log(`Role ${token} is not recognized`);
             }
         } catch (err) {
             console.error('Error updating status:', err);
@@ -41,7 +41,7 @@ module.exports = () => {
             console.log(`Updated Ip ${__reponse.data.ip} for teacher ${userId} `);
         }
         else {
-            console.log(`Role ${role} is not recognized`);
+            console.log(`Role ${token} is not recognized`);
         }
     };
 
@@ -61,7 +61,7 @@ module.exports = () => {
             await UserModel.updateOne({ userID: userId }, { $set: updateFields });
             console.log(`Updated teacher ${userId} to offline status`);
         } else {
-            console.log(`Role ${role} is not recognized`);
+            console.log(`Role ${token} is not recognized`);
         }
     };
 

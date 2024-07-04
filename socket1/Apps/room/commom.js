@@ -5,7 +5,7 @@ const { setOnline, setOffline } = require("../user/userCtrl")();
 module.exports = (io) => {
     const handleDisconnect = function (payload) {
         const socket = this;
-        setOffline(socket.deviceId);
+        setOffline(socket.handshake.query.token);
         msgLogout = `${socket.deviceId}_offline`
         msgLeaveClass = `${socket.deviceId}_leaveclass`
         // console.log(`${socket.classid}:activate`)

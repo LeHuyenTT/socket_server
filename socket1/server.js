@@ -113,7 +113,7 @@ if (cluster.isMaster) {
     io.on("connection", (socket) => {
         console.log(`Client with id: ${socket.deviceId} connected to server`.yellow);
         setOnline(socket.handshake.query.token);
-        setIP(socket, socket.handshake.query.token);
+        //setIP(socket, socket.handshake.query.token);
         io.emit("clientStatus", { clientId: socket.deviceId });
 
         const StudentModel = require("./Apps/models/StudentModel");
@@ -284,6 +284,43 @@ if (cluster.isMaster) {
 
             for (let idx = 0; idx < listIdStudent.length; idx++) {
                 topic = `${idClass}:${listIdStudent[idx]}:assign:start`;
+                io.emit(topic, idAssign);
+            }
+        });
+        socket.on("noti:doc:start", async (data) => {
+            [idClass, idAssign] = data.split("_");
+            __class = await ClassModel.findOne({ classID: idClass }).populate(
+                "members"
+            );
+            listIdStudent = [];
+            temp = {};
+            for (let i = 0; i < __class.members.length; i++) {
+                if (__class.members[i].role == "student") {
+                    listIdStudent.push(__class.members[i].username);
+                }
+            }
+
+            for (let idx = 0; idx < listIdStudent.length; idx++) {
+                topic = `${idClass}:${listIdStudent[idx]}:doc:start`;
+                io.emit(topic, idAssign);
+            }
+        });
+
+        socket.on("noti:doc:stop", async (data) => {
+            [idClass, idAssign] = data.split("_");
+            __class = await ClassModel.findOne({ classID: idClass }).populate(
+                "members"
+            );
+            listIdStudent = [];
+            temp = {};
+            for (let i = 0; i < __class.members.length; i++) {
+                if (__class.members[i].role == "student") {
+                    listIdStudent.push(__class.members[i].username);
+                }
+            }
+
+            for (let idx = 0; idx < listIdStudent.length; idx++) {
+                topic = `${idClass}:${listIdStudent[idx]}:doc:stop`;
                 io.emit(topic, idAssign);
             }
         });

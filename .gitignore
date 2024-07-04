@@ -42,3 +42,5 @@ public/
 
 # env
 .env
+
+.jmx

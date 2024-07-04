@@ -9,22 +9,21 @@ services:
     depends_on: 
       - socket
       - socket1
-    networks:
-      - local-dev
+
+  redis:
+    build: ./myredis
+    ports:
+      - "6379:6379"
 
   socket:
     build: ./socket/
     ports:
       - "4026:4025"
-    networks:
-      - local-dev
 
   socket1:
     build: ./socket1/
     ports:
       - "4027:4025"
-    networks:
-      - local-dev
 
   cAdvisor:
     image: google/cadvisor:latest
@@ -38,10 +37,4 @@ services:
       - /var/lib/docker/:/var/lib/docker:ro
     ports:
       - "8080:8080"
-   
 
-networks:
-  local-dev:
-    driver: bridge
-    name: local-dev
-    external: true

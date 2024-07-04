@@ -1,11 +1,12 @@
 module.exports = (io) => {
     const verifyToken = (socket, next) => {
         const token = socket.handshake.query.token;
+        const [userId, role] = token.split('_');
         try {
             topics = {
-                "device": token,
+                "device": userId,
             }
-            socket.deviceId = token;
+            socket.deviceId = socket;
             next();
         } catch (error) {
             console.error(`Error authenticating user: ${error.message}`);
