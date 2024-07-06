@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 const DBconnection = async() => {
     const conn = await mongoose
-        .connect(process.env.MONGO_URI, {
+        .connect("mongodb+srv://admin:admin@hybridclass.iemw7ln.mongodb.net/HSM?retryWrites=true&w=majority", {
             // useNewUrlParser: true,
             // useUnifiedTopology: true, // if using cloud => true
             // useCreateIndex: true,

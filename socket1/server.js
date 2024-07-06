@@ -114,7 +114,7 @@ if (cluster.isMaster) {
         console.log(`Client with id: ${socket.deviceId} connected to server`.yellow);
         setOnline(socket.handshake.query.token);
         //setIP(socket, socket.handshake.query.token);
-        io.emit("clientStatus", { clientId: socket.deviceId });
+        //io.emit("clientStatus", { clientId: socket.deviceId });
 
         const StudentModel = require("./Apps/models/StudentModel");
         const NotiModel = require("./Apps/models/NotiModel");
