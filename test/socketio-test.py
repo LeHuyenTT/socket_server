@@ -19,7 +19,7 @@ class SocketIOUser(HttpUser):
         self.token = f'{self.user_id}_student'
         
         # Connect to Socket.IO server with query parameters in the URL
-        self.sio.connect(f'http://127.0.0.1:4025?token={self.token}', transports=['websocket'])
+        self.sio.connect(f'http://127.0.0.1:4026?token={self.token}', transports=['websocket'])
 
     def on_connect(self):
         print(f"Connected to the server with user_id: {self.user_id}")

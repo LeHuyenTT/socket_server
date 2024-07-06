@@ -6,7 +6,7 @@ const token = userId; // Trong trường hợp này, chúng ta sẽ sử dụng 
 // const userId1 = "20520011"; // Thay thế bằng ID của người dùng bạn muốn sử dụng
 // const token1 = userId1;
 
-const socket = io("http://127.0.0.1:4026", {
+const socket = io("http://localhost:4026", {
   query: {
     token: token
   },

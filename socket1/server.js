@@ -12,7 +12,7 @@ const colors = require("colors");
 
 const numCPUs = require("os").cpus().length;
 const REDIS_PORT = process.env.REDIS_PORT || 6379;
-const REDIS_HOST = 'redis';
+const REDIS_HOST = 'localhost';
 
 // Tạo một Redis client cho các lệnh thông thường
 const redisClient = new Redis(REDIS_HOST, REDIS_PORT);
