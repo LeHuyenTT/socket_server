@@ -8,8 +8,7 @@ var DocsModel = new Schema({
 	author: {
 		type: Schema.Types.ObjectId,
 		// required: true, 
-		ref: "UserModel",
-		unique: true
+		ref: "UserModel"
 	},
 }, { timestamps: true });
 
