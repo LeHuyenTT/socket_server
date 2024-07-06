@@ -12,7 +12,7 @@ const colors = require("colors");
 
 const numCPUs = require("os").cpus().length;
 const REDIS_PORT = process.env.REDIS_PORT || 6379;
-const REDIS_HOST = process.env.REDIS_HOST || 'localhost';
+const REDIS_HOST = 'redis';
 
 // Tạo một Redis client cho các lệnh thông thường
 const redisClient = new Redis(REDIS_HOST, REDIS_PORT);
@@ -114,7 +114,7 @@ if (cluster.isMaster) {
         console.log(`Client with id: ${socket.deviceId} connected to server`.yellow);
         setOnline(socket.handshake.query.token);
         //setIP(socket, socket.handshake.query.token);
-       // io.emit("clientStatus", { clientId: socket.deviceId });
+        //io.emit("clientStatus", { clientId: socket.deviceId });
 
         const StudentModel = require("./Apps/models/StudentModel");
         const NotiModel = require("./Apps/models/NotiModel");
