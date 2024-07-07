@@ -311,7 +311,7 @@ if (cluster.isMaster) {
                 io.emit(topic, idAssign);
             }
         });
-        socket.on("noti:doc:start", async (data) => {
+        socket.on("noti:docs:start", async (data) => {
             [idClass, idAssign] = data.split("_");
             __class = await ClassModel.findOne({ classID: idClass }).populate(
                 "members"
@@ -326,11 +326,12 @@ if (cluster.isMaster) {
 
             for (let idx = 0; idx < listIdStudent.length; idx++) {
                 topic = `${idClass}:${listIdStudent[idx]}:docs:started`;
+                console.log("start doc")
                 io.emit(topic, idAssign);
             }
         });
 
-        socket.on("noti:doc:stop", async (data) => {
+        socket.on("noti:docs:stop", async (data) => {
             [idClass, idAssign] = data.split("_");
             __class = await ClassModel.findOne({ classID: idClass }).populate(
                 "members"
