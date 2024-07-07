@@ -325,7 +325,7 @@ if (cluster.isMaster) {
             }
 
             for (let idx = 0; idx < listIdStudent.length; idx++) {
-                topic = `${idClass}:${listIdStudent[idx]}:doc:start`;
+                topic = `${idClass}:${listIdStudent[idx]}:docs:started`;
                 io.emit(topic, idAssign);
             }
         });
@@ -344,7 +344,7 @@ if (cluster.isMaster) {
             }
 
             for (let idx = 0; idx < listIdStudent.length; idx++) {
-                topic = `${idClass}:${listIdStudent[idx]}:doc:stop`;
+                topic = `${idClass}:${listIdStudent[idx]}:docs:stoped`;
                 io.emit(topic, idAssign);
             }
         });
