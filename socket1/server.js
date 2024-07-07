@@ -324,9 +324,9 @@ if (cluster.isMaster) {
                 }
             }
 
+            console.log("start doc")
             for (let idx = 0; idx < listIdStudent.length; idx++) {
                 topic = `${idClass}:${listIdStudent[idx]}:docs:started`;
-                console.log("start doc")
                 io.emit(topic, idAssign);
             }
         });
