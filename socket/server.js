@@ -12,7 +12,7 @@ const colors = require("colors");
 
 const numCPUs = require("os").cpus().length;
 const REDIS_PORT = process.env.REDIS_PORT || 6379;
-const REDIS_HOST = 'localhost';//redis';
+const REDIS_HOST = 'redis';
 
 // Tạo một Redis client cho các lệnh thông thường
 const redisClient = new Redis(REDIS_HOST, REDIS_PORT);
@@ -278,9 +278,18 @@ if (cluster.isMaster) {
         });
 
         socket.on("noti:activate", (data) => {
+            console.log("Client login");
             [userid, device] = data.split("_");
             msgActivate = `${userid}_${device}`;
-            topic = `${userid}:activate`;
+            topic = "login:activate";
+            io.emit(topic, msgActivate);
+        });
+
+        socket.on("noti:inactivate", (data) => {
+            console.log("Client logout" + data);
+            [userid, device] = data.split("_");
+            msgActivate = `${userid}_offline`;
+            topic = "logout:inactivate";
             io.emit(topic, msgActivate);
         });
 

@@ -12,7 +12,7 @@ const colors = require("colors");
 
 const numCPUs = require("os").cpus().length;
 const REDIS_PORT = process.env.REDIS_PORT || 6379;
-const REDIS_HOST = 'localhost';
+const REDIS_HOST = 'redis';
 
 // Tạo một Redis client cho các lệnh thông thường
 const redisClient = new Redis(REDIS_HOST, REDIS_PORT);
@@ -53,6 +53,14 @@ app.use(helmet());
 app.get("/", (req, res) => {
     res.send(`Welcome to the server! ${process.env.PORT}`);
 });
+
+let connectedUsers = [];
+
+// Tạo một route trong Express để trả về danh sách người dùng đã kết nối
+app.get("/connected-users", (req, res) => {
+    res.json(connectedUsers);
+});
+
 
 if (cluster.isMaster) {
     console.log(`Master ${process.pid} is running`.yellow);
@@ -112,9 +120,20 @@ if (cluster.isMaster) {
 
     io.on("connection", (socket) => {
         console.log(`Client with id: ${socket.deviceId} connected to server`.yellow);
+        
+        // Thêm người dùng vào danh sách khi họ kết nối
+        connectedUsers.push(socket.deviceId);
+
+         // Xóa người dùng khỏi danh sách khi họ ngắt kết nối
+        socket.on("disconnect", () => {
+            console.log(`Client with id: ${socket.deviceId} disconnected from server`.yellow);
+            connectedUsers = connectedUsers.filter(id => id !== socket.deviceId);
+        });
+
         setOnline(socket.handshake.query.token);
+        console.log("socket.handshake.query.token: "+socket.handshake.query.token);
         //setIP(socket, socket.handshake.query.token);
-        //io.emit("clientStatus", { clientId: socket.deviceId });
+        io.emit("clientStatus", { clientId: socket.deviceId });
 
         const StudentModel = require("./Apps/models/StudentModel");
         const NotiModel = require("./Apps/models/NotiModel");
@@ -259,13 +278,18 @@ if (cluster.isMaster) {
         });
 
         socket.on("noti:activate", (data) => {
-            [userid, classid, device] = data.split("_");
-            socket.classid = classid;
-            if (device == "web") {
-                device = socket.handshake.address.address;
-            }
+            console.log("Client login");
+            [userid, device] = data.split("_");
             msgActivate = `${userid}_${device}`;
-            topic = `${classid}:activate`;
+            topic = "login:activate";
+            io.emit(topic, msgActivate);
+        });
+
+        socket.on("noti:inactivate", (data) => {
+            console.log("Client logout" + data);
+            [userid, device] = data.split("_");
+            msgActivate = `${userid}_offline`;
+            topic = "logout:inactivate";
             io.emit(topic, msgActivate);
         });
 
@@ -287,7 +311,7 @@ if (cluster.isMaster) {
                 io.emit(topic, idAssign);
             }
         });
-        socket.on("noti:docs:started", async (data) => {
+        socket.on("noti:doc:start", async (data) => {
             [idClass, idAssign] = data.split("_");
             __class = await ClassModel.findOne({ classID: idClass }).populate(
                 "members"
@@ -306,7 +330,7 @@ if (cluster.isMaster) {
             }
         });
 
-        socket.on("noti:docs:stoped", async (data) => {
+        socket.on("noti:doc:stop", async (data) => {
             [idClass, idAssign] = data.split("_");
             __class = await ClassModel.findOne({ classID: idClass }).populate(
                 "members"
