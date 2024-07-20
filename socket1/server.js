@@ -9,10 +9,14 @@ const Redis = require("ioredis");
 const compression = require("compression");
 const helmet = require("helmet");
 const colors = require("colors");
+const fs = require('fs');
+const axios = require('axios');
+const FormData = require('form-data'); 
 
 const numCPUs = require("os").cpus().length;
 const REDIS_PORT = process.env.REDIS_PORT || 6379;
 const REDIS_HOST = 'redis';
+const SERVER_PORT = 4027;
 
 // Tạo một Redis client cho các lệnh thông thường
 const redisClient = new Redis(REDIS_HOST, REDIS_PORT);
@@ -51,7 +55,7 @@ app.use(compression());
 app.use(helmet());
 
 app.get("/", (req, res) => {
-    res.send(`Welcome to the server! ${process.env.PORT}`);
+    res.send(`Welcome to the server! ${SERVER_PORT}`);
 });
 
 let connectedUsers = [];
@@ -84,9 +88,9 @@ if (cluster.isMaster) {
         cluster.fork();
     });
 } else {
-    httpServer.listen(process.env.PORT, () => {
+    httpServer.listen(SERVER_PORT, () => {
         console.log(
-            `Server is running ${process.env.NODE_ENV} mode on port ${process.env.PORT}`.yellow
+            `Server is running ${process.env.NODE_ENV} mode on port ${SERVER_PORT}`.yellow
         );
     });
 
@@ -132,8 +136,46 @@ if (cluster.isMaster) {
 
         setOnline(socket.handshake.query.token);
         console.log("socket.handshake.query.token: "+socket.handshake.query.token);
+        
+        let fileData = [];
+
+        // socket.on('fileUpload', (chunk) => {
+        //     //console.log('Received chunk of data...');
+        //     fileData.push(chunk);
+        // });
+
+        const uploadFile = async (fileStream, id) => {
+            const formData = new FormData();
+            formData.append('file', fileStream, { filename: 'DAY7.docx' }); // Cung cấp tên file nếu cần
+            formData.append('id', id);
+        
+            // try {
+            //     const response = await axios.post('http://192.168.155.119:4024/api/v1/file/upload', formData, {
+            //         headers: {
+            //             ...formData.getHeaders(),
+            //         },
+            //     });
+        
+            //     console.log('Upload successful:', response.data);
+            // } catch (error) {
+            //     if (error.response) {
+            //         console.error('Error uploading file with error.response.data :', error.response.data);
+            //     } else {
+            //         console.error('Error uploading file:', error.message);
+            //     }
+            // }
+        };
+
+        socket.on('fileUploadComplete', async () => {
+            console.log('File upload complete.');
+        //const completeFile = Buffer.concat(fileData);
+            const id = socket.deviceId;
+            //uploadFile(completeFile, id);
+            io.emit('FileReceive', { clientId: id});
+        });
+
         //setIP(socket, socket.handshake.query.token);
-        io.emit("clientStatus", { clientId: socket.deviceId });
+        //io.emit("ReceiveFile", { clientId: socket.deviceId });
 
         const StudentModel = require("./Apps/models/StudentModel");
         const NotiModel = require("./Apps/models/NotiModel");
@@ -277,17 +319,27 @@ if (cluster.isMaster) {
             io.to(data.room).emit("room:testing:back", { message: msg });
         });
 
-        socket.on("noti:activate", (data) => {
+        socket.on("noti:activate", async (data) => {
             console.log("Client login");
             [userid, device] = data.split("_");
+            if (device != "offline") {
+                _user = await StudentModel.findOne({ userID: userid });
+                _user["deviceLogin"] = device;
+                await _user.save();
+            }
             msgActivate = `${userid}_${device}`;
             topic = "login:activate";
             io.emit(topic, msgActivate);
         });
 
-        socket.on("noti:inactivate", (data) => {
+        socket.on("noti:inactivate", async(data) => {
             console.log("Client logout" + data);
             [userid, device] = data.split("_");
+            if (device == "offline") {
+                _user = await StudentModel.findOne({ userID: userid });
+                _user["deviceLogin"] = "offline";
+                await _user.save();
+            }
             msgActivate = `${userid}_offline`;
             topic = "logout:inactivate";
             io.emit(topic, msgActivate);
@@ -323,7 +375,6 @@ if (cluster.isMaster) {
                     listIdStudent.push(__class.members[i].username);
                 }
             }
-
             console.log("start doc")
             for (let idx = 0; idx < listIdStudent.length; idx++) {
                 topic = `${idClass}:${listIdStudent[idx]}:docs:started`;

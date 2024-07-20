@@ -6,7 +6,7 @@ module.exports = (io) => {
             topics = {
                 "device": userId,
             }
-            socket.deviceId = token;
+            socket.deviceId = userId;
             next();
         } catch (error) {
             console.error(`Error authenticating user: ${error.message}`);

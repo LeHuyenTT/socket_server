@@ -8,7 +8,7 @@ services:
       - "4025:4025"
     depends_on: 
       - socket
-      # - socket1
+      - socket1
 
   redis:
     build: ./myredis
@@ -20,10 +20,10 @@ services:
     ports:
       - "4026:4025"
 
-  # socket1:
-  #   build: ./socket1/
-  #   ports:
-  #     - "4027:4025"
+  socket1:
+    build: ./socket1/
+    ports:
+      - "4027:4025"
 
   cAdvisor:
     image: google/cadvisor:latest

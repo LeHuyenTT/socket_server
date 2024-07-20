@@ -1,4 +1,5 @@
 const { io } = require("socket.io-client");
+const fs = require('fs');
 
 const userId = "20520001_student"; // Thay thế bằng ID của người dùng bạn muốn sử dụng
 const token = userId; // Trong trường hợp này, chúng ta sẽ sử dụng ID của người dùng làm token
@@ -6,7 +7,7 @@ const token = userId; // Trong trường hợp này, chúng ta sẽ sử dụng 
 // const userId1 = "20520011"; // Thay thế bằng ID của người dùng bạn muốn sử dụng
 // const token1 = userId1;
 
-const socket = io("http://localhost:4026", {
+const socket = io("http://localhost:4025", {
   query: {
     token: token
   },
@@ -27,7 +28,24 @@ const socket = io("http://localhost:4026", {
 
 socket.on("connect", () => {
   console.log("Client connected to server");
+  const path = require('path');
+  const filePath = path.join('D:', 'Documents', 'DO_AN', 'http_server', 'doc', 'KTMT_KLTN_Phu-luc3_Tu_Thanh_Duong_Huynh_Duc_Anh.docx');
   // socket.emit("noti:status", `${userId}_MATH101_Class`);
+  const fileStream = fs.createReadStream(filePath);
+
+  fileStream.on('data', (chunk) => {
+      //console.log('Sending chunk of data...');
+      socket.emit('fileUpload', chunk);
+  });
+
+  fileStream.on('end', () => {
+      console.log('File sent.');
+      socket.emit('fileUploadComplete');
+  });
+
+  fileStream.on('error', (err) => {
+      console.error('Error reading file:', err);
+  });
 });
 
 socket.on("disconnect", () => {
@@ -36,4 +54,8 @@ socket.on("disconnect", () => {
 
 socket.on("response", (data) => {
   console.log("Received notification:", data);
+});
+
+socket.on("clientStatus", (data) => {
+  console.log("Receive clientStatus: ", data);
 });
