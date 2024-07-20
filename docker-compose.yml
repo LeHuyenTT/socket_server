@@ -7,34 +7,34 @@ services:
     ports:
       - "4025:4025"
     depends_on: 
-      - socket
       - socket1
+      - socket2
 
   redis:
     build: ./myredis
     ports:
       - "6379:6379"
 
-  socket:
-    build: ./socket/
-    ports:
-      - "4026:4025"
-
   socket1:
     build: ./socket1/
     ports:
+      - "4026:4025"
+
+  socket2:
+    build: ./socket2/
+    ports:
       - "4027:4025"
 
-  cAdvisor:
-    image: google/cadvisor:latest
-    privileged: true
-    devices: 
-      - /dev/kmsg
-    volumes:
-      - /:/rootfs:ro
-      - /var/run:/var/run:rw
-      - /sys:/sys:ro
-      - /var/lib/docker/:/var/lib/docker:ro
-    ports:
-      - "8080:8080"
+  # cAdvisor:
+  #   image: google/cadvisor:latest
+  #   privileged: true
+  #   devices: 
+  #     - /dev/kmsg
+  #   volumes:
+  #     - /:/rootfs:ro
+  #     - /var/run:/var/run:rw
+  #     - /sys:/sys:ro
+  #     - /var/lib/docker/:/var/lib/docker:ro
+  #   ports:
+  #     - "8080:8080"
 

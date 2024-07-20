@@ -3,6 +3,7 @@
     "@socket.io/cluster-adapter": "^0.2.2",
     "@socket.io/sticky": "^1.0.3",
     "axios": "^1.7.2",
+    "bull": "^4.14.0",
     "cluster": "^0.7.7",
     "colors": "^1.4.0",
     "compression": "^1.7.4",
@@ -19,7 +20,8 @@
     "os": "^0.1.2",
     "path": "^0.12.7",
     "rate-limit-redis": "^3.0.1",
-    "socket.io": "^4.6.1"
+    "socket.io": "^4.6.1",
+    "socket.io-redis": "^6.1.1"
   },
   "description": "Socket.io server",
   "scripts": {
